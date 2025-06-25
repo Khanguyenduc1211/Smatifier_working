@@ -7,6 +7,7 @@
 #include "time_module.h"
 #include "ble_module.h"
 #include "include/hardware_config.h"
+#include "brightness_module.h"    // <-- Bổ sung include này
 #include <lvgl.h>
 #include <Wire.h>
 #include "freertos/FreeRTOS.h"
@@ -58,6 +59,9 @@ void boot_system() {
 
     // Khởi tạo màn hình trước
     display.begin();
+
+    // Khởi tạo độ sáng màn hình (nếu cần)
+    BrightnessModule::init();
 
     // Khởi tạo WiFi
     wifi_init();

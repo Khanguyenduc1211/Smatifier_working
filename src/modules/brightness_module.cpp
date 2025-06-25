@@ -1,6 +1,5 @@
 #include "brightness_module.h"
-#include "hardware_config.h"
-
+#include "../../include/hardware_config.h"
 // Khởi tạo giá trị mặc định
 uint8_t BrightnessModule::brightness_percent = 100;
 
