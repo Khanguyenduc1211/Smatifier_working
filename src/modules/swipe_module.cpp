@@ -2,6 +2,7 @@
 #include "ui_module.h"
 #include "gesture_module.h"
 #include "touch_module.h"
+#include "brightness_module.h"
 #include "lvgl.h"
 
 // Hàm mapping hướng swipe theo bảng đã khai báo trong UIModule
@@ -10,59 +11,59 @@ static int getNextScreen(int cur, uint8_t swipeG) {
     switch (swipeG) {
         case 1: // Down
             switch(cur) {
-                case UI_SCREEN_WIFI:         return SCREEN_SETTINGSCREENTIME;
-                case UI_SCREEN_WIFI2:        return cur; // không chuyển
-                case UI_SCREEN_WIFI3:        return cur; // không chuyển
-                case UI_SCREEN_BRIGHTNESS:   return UI_SCREEN_WIFI;
-                case UI_SCREEN_NOTIFICATION: return cur; // giữ nguyên
-                case UI_SCREEN_HOME:         return UI_SCREEN_BRIGHTNESS;
-                case UI_SCREEN_NAVIGATION:   return cur; // giữ nguyên
-                case UI_SCREEN_BLE1:         return UI_SCREEN_HOME;
-                case UI_SCREEN_BLE2:         return cur; // không chuyển
-                case SCREEN_SETTINGSCREENTIME: return UI_SCREEN_BLE1;
-                default:                     return cur;
+                case SCREEN_SETTINGWIFI:         return SCREEN_SETTINGSCREENTIME;
+                case SCREEN_SETTINGWIFI2:        return cur; // không chuyển
+                case SCREEN_SETTINGWIFI3:        return cur; // không chuyển
+                case SCREEN_BRIGHTNESS:          return SCREEN_SETTINGWIFI;
+                case SCREEN_NOTIFICATION:        return cur; // giữ nguyên
+                case SCREEN_HOME1:               return SCREEN_BRIGHTNESS;
+                case SCREEN_NAVIGATION:          return cur; // giữ nguyên
+                case SCREEN_SETTINGBLE1:         return SCREEN_HOME1;
+                case SCREEN_SETTINGBLE2:         return cur; // không chuyển
+                case SCREEN_SETTINGSCREENTIME:   return SCREEN_SETTINGBLE1;
+                default:                         return cur;
             }
         case 2: // Up
             switch(cur) {
-                case UI_SCREEN_WIFI:         return UI_SCREEN_BRIGHTNESS;
-                case UI_SCREEN_WIFI2:        return cur; // không chuyển
-                case UI_SCREEN_WIFI3:        return cur; // không chuyển
-                case UI_SCREEN_BRIGHTNESS:   return UI_SCREEN_HOME;
-                case UI_SCREEN_NOTIFICATION: return cur; // giữ nguyên
-                case UI_SCREEN_HOME:         return UI_SCREEN_BLE1;
-                case UI_SCREEN_NAVIGATION:   return cur; // giữ nguyên
-                case UI_SCREEN_BLE1:         return SCREEN_SETTINGSCREENTIME;
-                case UI_SCREEN_BLE2:         return cur; // không chuyển
-                case SCREEN_SETTINGSCREENTIME: return UI_SCREEN_WIFI;
-                default:                     return cur;
+                case SCREEN_SETTINGWIFI:         return SCREEN_BRIGHTNESS;
+                case SCREEN_SETTINGWIFI2:        return cur; // không chuyển
+                case SCREEN_SETTINGWIFI3:        return cur; // không chuyển
+                case SCREEN_BRIGHTNESS:          return SCREEN_HOME1;
+                case SCREEN_NOTIFICATION:        return cur; // giữ nguyên
+                case SCREEN_HOME1:               return SCREEN_SETTINGBLE1;
+                case SCREEN_NAVIGATION:          return cur; // giữ nguyên
+                case SCREEN_SETTINGBLE1:         return SCREEN_SETTINGSCREENTIME;
+                case SCREEN_SETTINGBLE2:         return cur; // không chuyển
+                case SCREEN_SETTINGSCREENTIME:   return SCREEN_SETTINGWIFI;
+                default:                         return cur;
             }
         case 3: // Left
             switch(cur) {
-                case UI_SCREEN_WIFI:         return UI_SCREEN_WIFI2;
-                case UI_SCREEN_WIFI2:        return UI_SCREEN_WIFI3;
-                case UI_SCREEN_WIFI3:        return UI_SCREEN_WIFI;
-                case UI_SCREEN_BRIGHTNESS:   return cur; // giữ nguyên
-                case UI_SCREEN_NOTIFICATION: return UI_SCREEN_HOME;
-                case UI_SCREEN_HOME:         return UI_SCREEN_NAVIGATION;
-                case UI_SCREEN_NAVIGATION:   return UI_SCREEN_NOTIFICATION;
-                case UI_SCREEN_BLE1:         return UI_SCREEN_BLE2;
-                case UI_SCREEN_BLE2:         return UI_SCREEN_BLE1;
-                case SCREEN_SETTINGSCREENTIME: return cur; // không chuyển
-                default:                     return cur;
+                case SCREEN_SETTINGWIFI:         return SCREEN_SETTINGWIFI2;
+                case SCREEN_SETTINGWIFI2:        return SCREEN_SETTINGWIFI3;
+                case SCREEN_SETTINGWIFI3:        return SCREEN_SETTINGWIFI;
+                case SCREEN_BRIGHTNESS:          return cur; // giữ nguyên
+                case SCREEN_NOTIFICATION:        return SCREEN_HOME1;
+                case SCREEN_HOME1:               return SCREEN_NAVIGATION;
+                case SCREEN_NAVIGATION:          return SCREEN_NOTIFICATION;
+                case SCREEN_SETTINGBLE1:         return SCREEN_SETTINGBLE2;
+                case SCREEN_SETTINGBLE2:         return SCREEN_SETTINGBLE1;
+                case SCREEN_SETTINGSCREENTIME:   return cur; // không chuyển
+                default:                         return cur;
             }
         case 4: // Right
             switch(cur) {
-                case UI_SCREEN_WIFI:         return UI_SCREEN_WIFI3;
-                case UI_SCREEN_WIFI2:        return UI_SCREEN_WIFI;
-                case UI_SCREEN_WIFI3:        return UI_SCREEN_WIFI2;
-                case UI_SCREEN_BRIGHTNESS:   return cur; // giữ nguyên
-                case UI_SCREEN_NOTIFICATION: return UI_SCREEN_NAVIGATION;
-                case UI_SCREEN_HOME:         return UI_SCREEN_NOTIFICATION;
-                case UI_SCREEN_NAVIGATION:   return UI_SCREEN_HOME;
-                case UI_SCREEN_BLE1:         return UI_SCREEN_BLE2;
-                case UI_SCREEN_BLE2:         return UI_SCREEN_BLE1;
-                case SCREEN_SETTINGSCREENTIME: return cur; // không chuyển
-                default:                     return cur;
+                case SCREEN_SETTINGWIFI:         return SCREEN_SETTINGWIFI3;
+                case SCREEN_SETTINGWIFI2:        return SCREEN_SETTINGWIFI;
+                case SCREEN_SETTINGWIFI3:        return SCREEN_SETTINGWIFI2;
+                case SCREEN_BRIGHTNESS:          return cur; // giữ nguyên
+                case SCREEN_NOTIFICATION:        return SCREEN_NAVIGATION;
+                case SCREEN_HOME1:               return SCREEN_NOTIFICATION;
+                case SCREEN_NAVIGATION:          return SCREEN_HOME1;
+                case SCREEN_SETTINGBLE1:         return SCREEN_SETTINGBLE2;
+                case SCREEN_SETTINGBLE2:         return SCREEN_SETTINGBLE1;
+                case SCREEN_SETTINGSCREENTIME:   return cur; // không chuyển
+                default:                         return cur;
             }
         default: return cur;
     }
@@ -87,7 +88,21 @@ void SwipeModule::handleSwipe() {
     int next = cur;
     lv_scr_load_anim_t anim = LV_SCR_LOAD_ANIM_NONE;
 
-    // Swipe
+    // Tăng/giảm độ sáng ở màn hình brightness
+    if (cur == SCREEN_BRIGHTNESS) {
+        if (swipeG == 3) { // Left: giảm độ sáng
+            BrightnessModule::decrease(10); // mỗi lần giảm 10%
+            // (Tuỳ chọn) cập nhật UI slider hoặc số % ở đây
+            return;
+        }
+        if (swipeG == 4) { // Right: tăng độ sáng
+            BrightnessModule::increase(10); // mỗi lần tăng 10%
+            // (Tuỳ chọn) cập nhật UI slider hoặc số % ở đây
+            return;
+        }
+    }
+
+    // Phần còn lại xử lý chuyển màn hình như cũ
     if (swipeG == 1) { // Down
         next = getNextScreen(cur, swipeG);
         anim = LV_SCR_LOAD_ANIM_MOVE_BOTTOM;
@@ -100,8 +115,8 @@ void SwipeModule::handleSwipe() {
     } else if (swipeG == 4) { // Right
         next = getNextScreen(cur, swipeG);
         anim = LV_SCR_LOAD_ANIM_MOVE_RIGHT;
-    } else if (swipeG == 0x0C && cur != UI_SCREEN_HOME) { // Long Press về HOME
-        next = UI_SCREEN_HOME;
+    } else if (swipeG == 0x0C && cur != SCREEN_HOME1) { // Long Press về HOME
+        next = SCREEN_HOME1;
         anim = LV_SCR_LOAD_ANIM_FADE_ON;
     }
 
